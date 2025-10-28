@@ -1,0 +1,10 @@
+pout.*
+*.hdf5
+*.csv
+*.png
+*.out
+*.pyc
+*.txt
+gpAMRenv/
+/.ipynb_checkpoints
+/__py*
