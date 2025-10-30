@@ -1,9 +1,0 @@
-pout.*
-*.hdf5
-*.csv
-*.png
-*.out
-*.pyc
-*.txt
-/.ipynb_checkpoints
-*.gif
