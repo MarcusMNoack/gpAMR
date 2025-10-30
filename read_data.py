@@ -183,10 +183,12 @@ def read_hdf5II(filename, index = "vorticity"):
                 
         prob_domain = np.asarray([float(entry) for entry in prob_domain])
         prob_domain = prob_domain.reshape(2,2).T
+        y_data = component0.T.reshape(component0.size)
         res_dict = {
                     "global x": global_xy,
-                    "global y": component0.T.reshape(component0.size),
+                    "global y": y_data,
                     "domain": prob_domain}
+        print("max(y_data): ", np.max(y_data), " min(y_data): ", np.min(y_data))
         return res_dict
 
     else:

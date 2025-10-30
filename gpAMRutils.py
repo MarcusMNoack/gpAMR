@@ -141,6 +141,7 @@ def write_file(gpcam_path, chombo_path, a):
     os.rename(gpcam_path+'suggestions.csv.tmp', chombo_path+'suggestions.csv')
 
 def normalize_data(vec):
+    if np.all(vec) == 0.0: return vec, 0., 0.
     mi = np.min(vec)
     vec = vec - mi
     ma = np.max(vec)
@@ -212,8 +213,9 @@ def read_fileII(chombo_path, filename, index, tol_ratio, delete=True, normalize 
     dicct["global x"], dicct["global y"] = filter_xyz_data(dicct["global x"], dicct["global y"], filter_tol)
     if normalize: dicct["global y"], mi, ma = normalize_data(dicct["global y"])
     for i in range(len(ypatches)):
-        ypatches[i] = ypatches[i] - mi
-        ypatches[i] = ypatches[i] / ma
+        if ma != 0.0:
+            ypatches[i] = ypatches[i] - mi
+            ypatches[i] = ypatches[i] / ma
     if delete:
         os.remove(chombo_path+filename)
         os.remove(chombo_path+"ready.txt")
