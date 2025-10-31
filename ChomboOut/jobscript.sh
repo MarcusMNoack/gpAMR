@@ -4,12 +4,13 @@
 #SBATCH -q premium
 #SBATCH -t 02:00:00
 #SBATCH -N 2
+#SBATCH -e %j.err
+#SBATCH -o %j.out
 #SBATCH --ntasks-per-node=4
 #SBATCH --gpus-per-task=1
 #SBATCH --gpu-bind=map_gpu:0,1,2,3
 
-
-rm -f log
+rm log
 
 malloc_trim_threshold_=0
 module load python/3.11
@@ -30,6 +31,7 @@ module load craype-accel-nvidia80
 module load gpu/1.0
 module load sqs/2.0
 module load darshan/default
+module load cray-hdf5-parallel
 
 echo "setting up Chombo run"
 export MPICH_GPU_SUPPORT_ENABLED=0
@@ -40,6 +42,6 @@ progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
 # input="flowpastcylinder2d.inputs"
 input="inclusion.inputs"
 
-srun --exact -C gpu --nodes=2 --ntasks=8 $progname $input
+srun --exact -C gpu --nodes=2 --ntasks=8 $progname $input >& log
 
 
