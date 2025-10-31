@@ -12,7 +12,7 @@ export DASK_DISTRIBUTED__COMM__TIMEOUTS__CONNECT=3600s
 export DASK_DISTRIBUTED__COMM__TIMEOUTS__TCP=3600s
 export DASK_DISTRIBUTED__SCHEDULER__WORK_STEALING=False
 export DASK_DISTRIBUTED__SCHEDULER__WORKER_SATURATION=1
-
+MPICH_GPU_SUPPORT_ENABLED=0
 dask scheduler --no-dashboard \
     --interface hsn0 \
     --scheduler-file $scheduler_file &
