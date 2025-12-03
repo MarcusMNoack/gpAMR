@@ -2,7 +2,7 @@
 #SBATCH -A m5044_g
 #SBATCH -C gpu
 #SBATCH -q premium
-#SBATCH -t 02:00:00
+#SBATCH -t 04:00:00
 #SBATCH -N 2
 #SBATCH -e %j.err
 #SBATCH -o %j.out
