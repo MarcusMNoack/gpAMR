@@ -1,11 +1,11 @@
 # gpAMR
 
 
-installation: 
+installation (example for NERSC's Perlmutter): 
 
 "module load python/3.11"
 
-download the repo
+download the repo ("git clone https://github.com/MarcusMNoack/gpAMR")
 
 "python -m venv name_of_your_environment"
 
