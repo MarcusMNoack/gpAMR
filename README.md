@@ -5,7 +5,7 @@ installation (example for NERSC's Perlmutter):
 
 "module load python/3.11"
 
-download the repo ("git clone https://github.com/MarcusMNoack/gpAMR")
+Download the repo ("git clone https://github.com/MarcusMNoack/gpAMR").
 
 "python -m venv name_of_your_environment"
 
@@ -28,20 +28,16 @@ Then, in one terminal, run:
 
 for instance "./allocate_CPUs 4 16" (for 16 workers on 4 nodes).
 
-then run "./launch-dask-moduleGPU [same_number_of_nodes] [same_number_of_workers]" in the same terminal.
+Then run "./launch-dask-moduleGPU [same_number_of_nodes] [same_number_of_workers]" in the same terminal.
 
 This will start the Dask scheduler and the workers. The Jupyter Notebook "gpAMR.ipynb" (or similar) will connect to those resources. 
 
-Open the Jupyter notebook and choose the right ipykernel (name_of_your_environment).
+Go to your system's Jupyter Hub (for Nersc: https://jupyter.nersc.gov/hub/home) and start a server.
 
-In the other terminal, go to ./ChomboOut
+Open the Jupyter notebook (in the Jupyter Hub) and choose the right ipykernel (name_of_your_environment).
 
-Adapt the "jobscript.sh"
+In the unused terminal, go to ./ChomboOut
 
-and run "./launch_chombo.sh".
+Adapt the "jobscript.sh" and run "./launch_chombo.sh".
 
 Now run all cells in the Jupyter Notebook.
-
-
-
-
