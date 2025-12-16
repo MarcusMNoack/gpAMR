@@ -23,12 +23,13 @@ Open two terminals on your favorite supercomputing platform (here Perlmutter).
 
 Open "allocate_GPUs.sh", change the account number, and perform other required changes based on the system requirements
 
+Open "./launch-dask-moduleCPU" or "./launch-dask-moduleGPU" and adjust it based on your system configuration; especially make sure the script activates your Python environment. 
+
 Then, in one terminal, run:
-"./allocate_GPUs.sh [number_of_nodes] [number_of_workers]"
 
-for instance "./allocate_CPUs 4 16" (for 16 workers on 4 nodes).
+"./allocate_GPUs.sh [number_of_nodes] [number_of_workers]", for instance "./allocate_CPUs 4 16" (for 16 workers on 4 nodes).
 
-Then run "./launch-dask-moduleCPU [same_number_of_nodes] [same_number_of_workers]" in the same terminal.
+Then run "./launch-dask-moduleCPU [same_number_of_nodes] [same_number_of_workers]" (or the GPU equivalent) in the same terminal.
 
 This will start the Dask scheduler and the workers. The Jupyter Notebook "gpAMR.ipynb" (or similar) will connect to those resources (don't hit CTRL-C in this terminal). 
 
