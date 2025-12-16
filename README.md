@@ -28,15 +28,15 @@ Then, in one terminal, run:
 
 for instance "./allocate_CPUs 4 16" (for 16 workers on 4 nodes).
 
-Then run "./launch-dask-moduleGPU [same_number_of_nodes] [same_number_of_workers]" in the same terminal.
+Then run "./launch-dask-moduleCPU [same_number_of_nodes] [same_number_of_workers]" in the same terminal.
 
-This will start the Dask scheduler and the workers. The Jupyter Notebook "gpAMR.ipynb" (or similar) will connect to those resources. 
+This will start the Dask scheduler and the workers. The Jupyter Notebook "gpAMR.ipynb" (or similar) will connect to those resources (don't hit CTRL-C in this terminal). 
 
-Go to your system's Jupyter Hub (for Nersc: https://jupyter.nersc.gov/hub/home) and start a server.
+Go to your system's JupyterHub (for NERSC: https://jupyter.nersc.gov/hub/home) and start a server.
 
 Open the Jupyter notebook (in the Jupyter Hub) and choose the right ipykernel (name_of_your_environment).
 
-In the unused terminal, go to ./ChomboOut
+In the unused terminal, go to "./ChomboOut".
 
 Adapt the "jobscript.sh" and run "./launch_chombo.sh".
 
