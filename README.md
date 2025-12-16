@@ -21,7 +21,7 @@ python -m ipykernel install --user --name name_of_your_environment --display-nam
 
 Open two terminals on your favorite supercomputing platform (here Perlmutter).
 
-open "allocate_GPUs.sh" and change the account number and perfom other required changes based on the system requirements
+Open "allocate_GPUs.sh", change the account number, and perform other required changes based on the system requirements
 
 Then, in one terminal, run:
 "./allocate_GPUs.sh [number_of_nodes] [number_of_workers]"
