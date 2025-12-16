@@ -60,7 +60,9 @@ def init_client(scheduler_file, n_workers):
             print("file found")
             time.sleep(2)
             try: client = Client(scheduler_file=scheduler_file)
-            except: continue
+            except Exception as e:
+                print("ERROR: ", e)
+                continue
             break
     print("waiting for workers")
     client.wait_for_workers(n_workers)
