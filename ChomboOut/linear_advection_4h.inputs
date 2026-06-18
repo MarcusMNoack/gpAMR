@@ -1,0 +1,192 @@
+use_tags_from_file    = true
+use_tags_from_vort    = false
+tags_file_name        = "suggestions.csv"
+#restart_file          = check106.nx128.2d.hdf5
+#restart_file          = check208.nx128.2d.hdf5
+#restart_file          = check96.nx128.2d.hdf5
+#restart_file          = check96.nx64.2d.hdf5
+#restart_file          = check384.nx128.2d.hdf5
+#plot_file = striped/plot
+#check_file = striped/check
+#max_step  	      = 96
+max_step  	      = 200
+#max_step  	      = 100
+#max_step  	      = 10
+#max_time              = 0.1
+max_time              = 1000.0
+
+#mg_relax_type_poiss = 2
+#mg_bottom_solver_poiss = 3
+
+mg_relax_type  = 2
+mg_relax_lazy  = true
+mg_num_smooths = 4
+#mg_bottom_solver = 3
+mg_bottom_solver = 0
+mg_num_precond = 4
+mg_num_cycles  = 1
+mg_hang        = 1.0e-1
+mg_tolerance   = 1.0e-15
+mg_norm_thresh = 1.0e-15
+mg_iter_max    = 100
+mg_coarsen_limit = 2
+
+tag_on_scalar         = 0
+
+#euler
+#viscosity             = 0.01
+#refine_threshold      = 5.0
+
+viscosity             = 1.e-2
+#viscosity             = 1.
+refine_threshold      = 1.
+refine_threshold_stress      = 1.e-10
+#refine_threshold      = 2.0
+
+#do_slip_walls         = 0
+do_slip_walls         = 1
+do_slip_walls_hi      = 0 1 1
+do_slip_walls_lo      = 0 1 1
+
+order_time            = 1
+#order_time            = 3
+order_ebbc            = 1
+
+use_limiting          = 1
+
+#domain_length         = 2.0
+#domain_length         = 16.0
+domain_length         = 1.
+
+#fixed_hierarchy       = true
+
+max_level	      = 1
+#n_cell                = 32 16 16
+n_cell                = 64 32 32
+#n_cell                = 128 64 64
+#n_cell                = 256 128 128
+#n_cell                = 512 256 256
+#n_cell                = 1024 512 512
+#n_cell                = 2048 1024 1024
+#ref_ratio	      = 2 2 2 2 2
+ref_ratio	      =  4 4 4 4
+#ref_ratio	      =  8 4 4
+num_filter_iterations  = 0
+num_gphi_iterations    = 1
+num_init_iterations    = 0
+
+checkpoint_interval   = 10
+plot_interval	      = 10
+max_grid_size	      = 32
+fill_ratio	      = 0.7
+block_factor	      = 8
+regrid_interval	      = 10
+#regrid_interval	      = 1000000
+##this has to be bigger than one!
+max_dt_grow	      = 10
+cfl		      = 0.75
+init_cfl	      = 0.75
+#cfl		      = 0.2391
+#init_cfl	      = 0.2391
+verbosity	      = 3
+nesting_radius	      = 2
+#tag_buffer	      = 16
+tag_buffer	      = 2
+flow_dir	      = 0
+inflow_vel	      = 0.04
+
+do_regrid_smoothing   = true
+
+###geometry flag
+## 0 is all regular
+which_geom = 0
+
+## 5 is a sphere
+#which_geom = 5
+
+sphere_radius = 0.125
+sphere_center = 0.5 0.25 0.25
+cutplane_normal = 0.5 0.0 0.0
+
+#poiseuille_inflow = true
+poiseuille_inflow = false
+###poiseuille_init can only be true in poiseuille_inflow is true
+###poiseuille_init can be false if poiseuille_inflow is true
+poiseuille_init = false
+#poiseuille_init = true
+##for domain length=16
+#poise_profile_radius = 2.0
+#poise_profile_center_pt = 0.0 2.0 2.0
+poise_profile_radius = 0.25
+poise_profile_center_pt = 0.0 0.25 0.25
+#poise_profile_radius = 0.5
+#poise_profile_center_pt = 0.0 0.5 0.5
+poise_profile_axis = 1.0 0.0 0.0
+poise_maxvel_factor = 2.0
+
+set_plug_flow = true
+
+reynolds              = 1.0
+beta                  = 1.0
+update_stress         = true
+forceSteadyState = true
+do_crunch_reactions   = false
+#do_steady_state       = true
+steady_state_tol       = 1.e-6
+#stokesFlow            = false
+#use_stokes_dt         = true
+#wasStokesDt           = true
+fixed_dt              = 0.05
+#reInitializeCrunchFlow = true
+post_regrid_velocity_iterations = 10
+#set this only if wanting to refine on specific components
+#default in code is all components
+number_components_refine = 1
+refine_component_0 = 0
+refine_threshold_0 = 0.1
+inflow_0 = 1.0
+
+###species concentration
+diffusivity_0   = 0.0
+diffusivity_1   = 1.0e-5
+diffusivity_2   = 1.0e-5
+diffusivity_3   = 1.0e-5
+diffusivity_4   = 1.0e-5
+diffusivity   = 0.0
+reaction_rate = 0.0
+reaction_rate_0 = 0.0
+reaction_rate_1 = 0.0
+reaction_rate_2 = 0.0
+reaction_rate_3 = 0.0
+reaction_rate_4 = 0.0
+#reaction_rate = 0.75
+heat_initial = 0.0
+heat_inflow = 1.0
+# EB BCs: 1 is Dirichlet, 0 is Neumann
+heat_ebbc_type = 0
+heat_ebbc_value         = 0
+# Domain BCs: 1 is Dirichlet, 0 is Neumann
+heat_domainlobc_type    =  1 0 0
+heat_domainhibc_type    =  0 0 0
+heat_domainlobc_value   = 1.0 0.0 0.0
+heat_domainhibc_value   = 0.0 0.0 0.0
+heat_mg_relax_type         = 2
+#heat_mg_relax_type         = 999
+heat_mg_num_smooths     = 4
+heat_mg_relax_lazy      = true
+heat_mg_bottom_solver   = 0
+#heat_mg_bottom_solver   = 3
+heat_mg_num_precond     = 4
+heat_mg_hang            = 1.e-1
+heat_mg_tolerance       = 1.e-12
+heat_mg_num_cycles      = 1
+heat_mg_iter_max        = 100
+heat_mg_norm_thresh     = 1.e-15
+heat_verbosity          = 3
+
+num_reaction_components = 1
+num_secondary_species = 0
+num_kinetic = 1
+#num_reaction_components = 5
+#num_secondary_species = 8
+#num_kinetic = 1

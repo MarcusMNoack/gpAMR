@@ -3,7 +3,7 @@
 
 installation (example for NERSC's Perlmutter): 
 
-"module load python/3.11"
+"module load python/3.11-24.1.0"
 
 Download the repo ("git clone https://github.com/MarcusMNoack/gpAMR").
 

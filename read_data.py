@@ -116,6 +116,8 @@ def read_hdf5(filename, index = "vorticity"):
         return None, None
 
 
+#"component0" for the advection problem
+
 def read_hdf5II(filename, index = "vorticity"):
     if os.path.isfile(filename):
         hf_in = h5py.File(filename,"r")

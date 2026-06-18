@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -A m5044_g
+#SBATCH -A m4872_g
 #SBATCH -C gpu
 #SBATCH -q premium
-#SBATCH -t 24:00:00
+#SBATCH -t 04:00:00
 #SBATCH -N 2
 #SBATCH -e %j.err
 #SBATCH -o %j.out
@@ -35,12 +35,23 @@ module load cray-hdf5-parallel
 
 echo "setting up Chombo run"
 export MPICH_GPU_SUPPORT_ENABLED=0
+
+# Viscous flow
 # progname="gpamrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
-progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
-
-
 # input="flowpastcylinder2d.inputs"
-input="inclusion.inputs"
+
+
+# Density
+# progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+# input="inclusion.inputs"
+
+
+# Advection
+# gpadrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex
+# linear_advection.inputs 
+# linear_advection_h.inputs
+# linear_advection_2h.inputs
+# linear_advection_4h.inputs
 
 srun --exact -C gpu --nodes=2 --ntasks=8 $progname $input >& log
 
