@@ -21,13 +21,14 @@ python -m ipykernel install --user --name name_of_your_environment --display-nam
 
 Open two terminals on your favorite supercomputing platform (here Perlmutter).
 
-Open "allocate_GPUs.sh", change the account number, and perform other required changes based on the system requirements
+
+In the first, open "allocate_GPUs.sh", change the account number, and perform other required changes based on the system requirements
 
 Open "./launch-dask-moduleCPU" or "./launch-dask-moduleGPU" and adjust it based on your system configuration; especially make sure the script activates your Python environment. 
 
-Then, in one terminal, run:
+Then, in that terminal, run:
 
-"./allocate_GPUs.sh [number_of_nodes] [number_of_workers]", for instance "./allocate_CPUs 4 16" (for 16 workers on 4 nodes).
+"./allocate_CPUs.sh [number_of_nodes] [number_of_workers]", for instance "./allocate_CPUs 4 16" (for 16 workers on 4 nodes, or use the GPU equivalent).
 
 Then run "./launch-dask-moduleCPU [same_number_of_nodes] [same_number_of_workers]" (or the GPU equivalent) in the same terminal.
 

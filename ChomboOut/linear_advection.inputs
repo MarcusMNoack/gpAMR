@@ -9,8 +9,8 @@ tags_file_name        = "suggestions.csv"
 #plot_file = striped/plot
 #check_file = striped/check
 #max_step  	      = 96
-max_step  	      = 200
-#max_step  	      = 100
+#max_step  	      = 200
+max_step  	      = 192
 #max_step  	      = 10
 #max_time              = 0.1
 max_time              = 1000.0
@@ -40,7 +40,8 @@ tag_on_scalar         = 0
 viscosity             = 1.e-2
 #viscosity             = 1.
 refine_threshold      = 1.
-refine_threshold_stress      = 1.e-10
+refine_threshold_stress        = 1.e-1
+refine_threshold_stress_0      = 1.e-1
 #refine_threshold      = 2.0
 
 #do_slip_walls         = 0
@@ -72,15 +73,15 @@ n_cell                = 64 32 32
 ref_ratio	      =  4 4 4 4
 #ref_ratio	      =  8 4 4
 num_filter_iterations  = 0
-num_gphi_iterations    = 1
+num_gphi_iterations    = 0
 num_init_iterations    = 0
 
-checkpoint_interval   = 10
-plot_interval	      = 10
+checkpoint_interval   = 16
+plot_interval	      = 16
 max_grid_size	      = 32
 fill_ratio	      = 0.7
 block_factor	      = 8
-regrid_interval	      = 10
+regrid_interval	      = 16
 #regrid_interval	      = 1000000
 ##this has to be bigger than one!
 max_dt_grow	      = 10
@@ -88,14 +89,14 @@ cfl		      = 0.75
 init_cfl	      = 0.75
 #cfl		      = 0.2391
 #init_cfl	      = 0.2391
-verbosity	      = 3
+verbosity	      = 30
 nesting_radius	      = 2
 #tag_buffer	      = 16
 tag_buffer	      = 2
 flow_dir	      = 0
 inflow_vel	      = 0.04
 
-do_regrid_smoothing   = true
+do_regrid_smoothing   = false
 
 ###geometry flag
 ## 0 is all regular
@@ -135,15 +136,16 @@ do_crunch_reactions   = false
 steady_state_tol       = 1.e-6
 #stokesFlow            = false
 #use_stokes_dt         = true
-#wasStokesDt           = true
+wasStokesDt           = true
 #fixed_dt              = 0.001
 #reInitializeCrunchFlow = true
-post_regrid_velocity_iterations = 10
+post_regrid_velocity_iterations = 1
 #set this only if wanting to refine on specific components
 #default in code is all components
 number_components_refine = 1
 refine_component_0 = 0
 refine_threshold_0 = 0.1
+refine_threshold_stress = 0.1
 inflow_0 = 1.0
 
 ###species concentration
@@ -182,7 +184,7 @@ heat_mg_tolerance       = 1.e-12
 heat_mg_num_cycles      = 1
 heat_mg_iter_max        = 100
 heat_mg_norm_thresh     = 1.e-15
-heat_verbosity          = 3
+heat_verbosity          = 30
 
 num_reaction_components = 1
 num_secondary_species = 0
