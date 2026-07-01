@@ -2,7 +2,7 @@
 #SBATCH -A m4872_g
 #SBATCH -C gpu
 #SBATCH -q premium
-#SBATCH -t 00:30:00
+#SBATCH -t 02:30:00
 #SBATCH -N 2
 #SBATCH -e %j.err
 #SBATCH -o %j.out
@@ -42,13 +42,13 @@ export MPICH_GPU_SUPPORT_ENABLED=0
 
 
 # Density
-# progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
-# input="inclusion.inputs"
+ progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+ input="inclusion.inputs"
 
 
 # Advection
- progname="gpadrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
- input="linear_advection.inputs" 
+# progname="gpadrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+# input="linear_advection.inputs" 
 # linear_advection_h.inputs
 # linear_advection_2h.inputs
 # linear_advection_4h.inputs
