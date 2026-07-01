@@ -117,6 +117,9 @@ def set_args(client, GP, args):
     f = client.submit(lambda obj: obj.set_args(args), GP).result()
     return f
 
+def set_hps(client, GP, hps):
+    f = client.submit(lambda obj: obj.set_hyperparameters(hps), GP).result()
+    return f
 
 def set_new_noise_func(client, noise, GP):
     def setn(obj):
@@ -256,7 +259,7 @@ def refined_grid(refinement, x_range, y_range):
 
 
 def read_fileIII(chombo_path, filename, index, n_sub_x=1, n_sub_y=1, pad_x=0, pad_y=0, rename=True, delete=False):
-    print("Waiting for Chombo file:")
+    print("Waiting for Chombo file:", chombo_path+filename)
     print(". ", end='')
     while True:
         if os.path.exists(chombo_path+"ready.txt") and os.path.exists(chombo_path+filename):
@@ -298,7 +301,7 @@ def make_refinement_candidates(result, refinement_level, include_coarse=False):
     Generate refinement candidate points for every subdomain.
  
     refinement_level in {2, 4, 8}: number of cells each coarse cell is split
-    into per axis. 2 -> one new point between neighbours, 4 -> three, 8 -> seven
+    into per axis. 2 -> one new point between neighbors, 4 -> three, 8 -> seven
     (fine spacing h = 1 / refinement_level on both axes).
  
     Ownership / uniqueness: each fine point's owning coarse cell is

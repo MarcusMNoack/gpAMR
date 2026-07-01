@@ -8,3 +8,4 @@ pout.*
 gpAMRenv/
 /.ipynb_checkpoints
 /__py*
+Results/
