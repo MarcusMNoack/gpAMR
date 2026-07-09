@@ -137,6 +137,7 @@ def filter(x_data, y_data, tol):
     
     assert tol >= 0., tol
     nonzero_index = np.where(abs(y_data) >= tol)
+    if np.all(abs(y_data) < tol): return x_data, y_data
     return x_data[nonzero_index], y_data[nonzero_index]
 
 def normalize(vec, mi = None, ma = None):
