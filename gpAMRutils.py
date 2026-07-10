@@ -129,6 +129,14 @@ def set_new_noise_func(client, noise, GP):
     
 ######################################
 
+def filter_all_data(data, tol_ratio):
+    filter_tol = tol_ratio * np.max(abs(data["global_coordinates"]))
+    for blockID in data["local_data"]:
+        y_data = data["local_data"][blockID]["values"]
+        x_data = data["local_data"][blockID]["points"]
+        data["local_data"][blockID]["points"], data["local_data"][blockID]["values"] = filter(x_data, y_data, filter_tol)
+    return data
+
 def filter(x_data, y_data, tol):
     """
     This function takes data on a grid and transforms it into x,y, z coordinates.
@@ -140,27 +148,19 @@ def filter(x_data, y_data, tol):
     if np.all(abs(y_data) < tol): return x_data, y_data
     return x_data[nonzero_index], y_data[nonzero_index]
 
-def normalize(vec, mi = None, ma = None):
-    if np.all(vec) == 0.0: return vec, 0., 0.
-    if mi is None: mi = np.min(vec)
-    vec = vec - mi
-    if ma is None: ma = np.max(vec)
-    vec = vec / ma
-    return vec, mi, ma
-
-def filter_all_data(data, tol_ratio):
-    filter_tol = tol_ratio * np.max(abs(data["global_coordinates"]))
-    for blockID in data["local_data"]:
-        y_data = data["local_data"][blockID]["values"]
-        x_data = data["local_data"][blockID]["points"]
-        data["local_data"][blockID]["points"], data["local_data"][blockID]["values"] = filter(x_data, y_data, filter_tol)
-    return data
-        
 def normalize_data(data, mi = None, ma = None):
+    v = data["global_funcvalues"]
+    vmin, vmax = v.min(), v.max()
     for blockID in data["local_data"]:
         y_data = data["local_data"][blockID]["values"]
-        data["local_data"][blockID]["values"], mi, ma = normalize(y_data, mi=mi, ma=ma)
+        data["local_data"][blockID]["values"] = normalize(y_data, vmin, vmax)
     return data
+
+def normalize(vec, vmin, vmax):
+    if vmin == vmax == 0.: return vec #only when vec.all() == 0., return all 0s
+    elif vmin == vmax: return vec/vmax #only when min(vec) == max(vec), return vector of ones
+    return (vec - vmin) / (vmax - vmin)
+
 
 def write_file(gpcam_path, chombo_path, a):
     print("Write new suggestions file:")
