@@ -37,13 +37,13 @@ echo "setting up Chombo run"
 export MPICH_GPU_SUPPORT_ENABLED=0
 
 # Viscous flow
-# progname="gpamrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
-# input="flowpastcylinder2d.inputs"
+progname="gpamrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+input="flowpastcylinder2d.inputs"
 
 
 # Density
- progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
- input="inclusion.inputs"
+# progname="viscousDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+# input="inclusion.inputs"
 
 
 # Advection
