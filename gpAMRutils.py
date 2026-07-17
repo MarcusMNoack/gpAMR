@@ -178,87 +178,6 @@ def refined_grid(refinement, x_range, y_range):
     return np.stack(np.meshgrid(xs, ys, indexing='ij'), axis=-1).reshape(-1, 2)
 
 
-
-# def read_file(chombo_path, filename, index, tol_ratio, delete=True, normalize = False, filter = True):
-#     print("Waiting for Chombo file:")
-#     print(". ", end='')
-#     while True:
-#         if os.path.exists(chombo_path+"ready.txt") and os.path.exists(chombo_path+filename):
-#             while True:
-#                 try:
-#                     dicct = read_hdf5(chombo_path+filename, index = index)
-#                     print(f"✅ Successfully read {filename}")
-#                     break
-#                 except Exception as e:
-#                     print(f"⚠️  Failed to read {filename}: {e}")
-#                     print(f"Retrying in 1 second...")
-#                     time.sleep(1)
-                    
-#             if isinstance(dicct["global y"], np.ndarray): break
-#             else:
-#                 print(data)
-#                 raise Exception("Wrong data format communicated")
-#         else:
-#             print(". ", end='')
-#             time.sleep(0.5)
-#     filter_tol = tol_ratio * np.max(abs(dicct["global y"])) 
-#     datasets = dicct["block data"]
-#     dicct["global x"], dicct["global y"] = filter_xyz_data(dicct["global x"], dicct["global y"], filter_tol, filter = filter)
-#     if normalize: dicct["global y"], mi, ma = normalize_data(dicct["global y"])
-#     for ID in datasets: 
-#         comp_grid = datasets[ID][0].copy()
-#         x, y = filter_xyz_data(datasets[ID][0], datasets[ID][1], tol=filter_tol, filter = filter)
-#         if normalize: 
-#             y = y - mi
-#             y = y / ma
-#         #datasets[ID] = (x,y, datasets[ID][2], comp_grid)
-#         datasets[ID] = (x,y, datasets[ID][2])
-#     if delete:
-#         date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-#         os.rename(chombo_path+filename, chombo_path+filename+date_time)
-#         #os.remove(chombo_path+filename)
-#         os.remove(chombo_path+"ready.txt")
-#     return datasets, dicct["domain"], dicct["global x"], dicct["global y"]
-
-# def read_fileII(chombo_path, filename, index, tol_ratio, delete=True, normalize = False):
-#     print("Waiting for Chombo file:")
-#     print(". ", end='')
-#     while True:
-#         if os.path.exists(chombo_path+"ready.txt") and os.path.exists(chombo_path+filename):
-#             while True:
-#                 try:
-#                     dicct = read_hdf5II(chombo_path+filename, index = index)
-#                     print(f"✅ Successfully read {filename}")
-#                     break
-#                 except Exception as e:
-#                     print(f"⚠️  Failed to read {filename}: {e}")
-#                     print(f"Retrying in 1 second...")
-#                     time.sleep(1)
-                    
-#             if isinstance(dicct["global y"], np.ndarray): break
-#             else:
-#                 print(data)
-#                 raise Exception("Wrong data format communicated")
-#         else:
-#             print(". ", end='')
-#             time.sleep(0.5)
-#     filter_tol = tol_ratio * np.max(abs(dicct["global y"]))
-#     xpatches, ypatches = make_block_data(dicct["global x"], dicct["global y"], 64, 64, 16, 16) ###64, and 16 has to be returned from the read_file
-#     dicct["global x"], dicct["global y"] = filter_xyz_data(dicct["global x"], dicct["global y"], filter_tol, filter = filter)
-#     if normalize: dicct["global y"], mi, ma = normalize_data(dicct["global y"])
-#     for i in range(len(ypatches)):
-#         if ma != 0.0:
-#             ypatches[i] = ypatches[i] - mi
-#             ypatches[i] = ypatches[i] / ma
-#     if delete:
-#         date_time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-#         os.rename(chombo_path+filename, chombo_path+filename+date_time)
-#         #os.remove(chombo_path+filename)
-#         os.remove(chombo_path+"ready.txt")
-#     return dicct["domain"], dicct["global x"], dicct["global y"], xpatches, ypatches
-
-
-
 def read_fileIII(chombo_path, filename, index, n_sub_x=1, n_sub_y=1, pad_x=0, pad_y=0, rename=True, delete=False):
     print("Waiting for Chombo file:", chombo_path+filename)
     print(". ", end='')
@@ -423,6 +342,16 @@ def valid(A):
     return valid
 
 
+from scipy.interpolate import griddata
+from gpcam.kernels import *
+from scipy.interpolate import RBFInterpolator
+from scipy.sparse import csr_matrix
+from scipy.sparse.linalg import spsolve
+from scipy.spatial.distance import cdist
+
+from scipy.spatial import cKDTree
+from scipy.sparse import csr_matrix, identity
+
 from scipy.interpolate import CloughTocher2DInterpolator, NearestNDInterpolator
 def padded_ct(points, values, pad_frac=0.1, n_ghost=60):
     lo, hi = points.min(0), points.max(0)
@@ -453,4 +382,118 @@ def interpolator_grad(rbf, span, x):
     gx = (rbf(x + ex) - rbf(x - ex)) / (2*h)
     gy = (rbf(x + ey) - rbf(x - ey)) / (2*h)
     norm = np.hypot(gx, gy)
-    return norm
+    return norm, gx, gy
+
+def meanf(x,hps, args):
+    m = args["block_mean"]
+    #print(m)
+    return np.zeros(len(x)) + m
+
+def acq_func(x, gp):
+    x = np.asarray(x)
+    return np.sqrt(gp.posterior_covariance(x, variance_only=True)["v(x)"])
+
+
+def kernelPDEII(x1, x2, hps, args):
+    """
+    Anisotropic non-stationary Gibbs kernel (gpAMR Eq. 4), directional extension.
+
+    Each axis gets its own length-scale field that contracts based on the PDE
+    solution's gradient COMPONENT along that axis (dq/dx_d), NOT the gradient
+    norm |grad q|. Using the norm makes both axes contract identically
+    (isotropic), which defeats the directional intent. The gradient sensitivity
+    `beta` is shared across directions:
+
+        ell_d(x) = ell0_d / (1 + beta * |dq/dx_d|)              d = 0 .. D-1
+
+        k(x, x') = sf^2
+                   * PROD_d [ 2 * l1_d * l2_d / (l1_d^2 + l2_d^2) ]^(1/2)   # prefactor
+                   * exp( - SUM_d (x_d - x'_d)^2 / (l1_d^2 + l2_d^2) )      # anisotropic SE
+
+    This is the diagonal Paciorek-Schervish construction. It is guaranteed
+    symmetric positive semidefinite for ANY per-axis field ell_d(x) > 0, which
+    the denominator (1 + beta*|g_d|) >= 1 with ell0_d > 0, beta >= 0 enforces.
+    In the zero-gradient limit it reduces to a standard anisotropic SE kernel;
+    setting ell0_x = ell0_y and swapping components for the norm recovers the
+    original isotropic kernel.
+
+    Hyperparameters (D = 2 case shown; layout generalizes to any D):
+        hps[0] : sf       signal-std scale       -> kernel returns sf^2 * (...)
+        hps[1] : ell0_x   max length scale along axis 0 (flat-region corr. length)
+        hps[2] : ell0_y   max length scale along axis 1 (flat-region corr. length)
+        hps[3] : b        raw gradient sensitivity; effective beta = b^2 >= 0,
+                          SHARED across directions (b^2 keeps it non-negative)
+
+    For general D: hps[1 : 1+D] are the per-axis ell0_d, hps[1+D] is b.
+
+    Recommended training bounds  (grid/index units: domain [0,64]^2, dx ~ 1)
+    ----------------------------------------------------------------------------
+        hps[0] : [1e-2, 1e1]    data-dependent; ~ sqrt(mean-square of y) is the
+                                center of mass. Widen if y is not O(1).
+        hps[1] : [2.0, 64.0]    >=2 cells (resolution floor) .. domain extent.
+        hps[2] : [2.0, 64.0]    same. Search these in LOG space if fvGP allows;
+                                length scales are multiplicative.
+        hps[3] : [0.0, 2.2]     effective beta in [0, ~5]. 0.0 is a legitimate
+                                stationary fallback the optimizer can rest on.
+                                At |grad q| ~ 1 the effective beta reads directly
+                                as the contraction factor (beta=1 halves ell).
+
+    As a ready-to-use box:
+        hps_bounds = np.array([[1e-2, 1e1],
+                               [2.0, 64.0],
+                               [2.0, 64.0],
+                               [0.0, 2.2]])
+
+    Conditioning note
+    -----------------
+    On a dense grid the not-PD / Cholesky failures come from the SMOOTH regime
+    (large ell0 -> long correlations -> near-duplicate rows -> rank-deficient K),
+    NOT from steep/contracted regions (those are well conditioned). Add a small
+    diagonal jitter ~ 1e-6 * sf^2 to K; that is what protects the large-ell0
+    corner. If you later need beta > ~5 with a hard floor on ell, switch to the
+    floored field  ell_d = ell_min + (ell0_d - ell_min) / (1 + beta*|g_d|).
+    """
+    D = x1.shape[1]
+    rbf = args["rbf"]
+    span = args["span"]
+
+    # --- gradient COMPONENTS at each point ---
+    # interpolator_grad returns (|grad q|, dq/dx, dq/dy). We must use the
+    # SEPARATE components, NOT the magnitude: the magnitude drives both axes
+    # identically (isotropic contraction). Column order here MUST match the
+    # column order of x1/x2 -- i.e. x1[:, 0] is the axis gx differentiates.
+    _, gx1, gy1 = interpolator_grad(rbf, span, x1)
+    _, gx2, gy2 = interpolator_grad(rbf, span, x2)
+    del rbf
+    gc1 = np.abs(np.stack([gx1, gy1], axis=1))        # (N1, 2): [|dq/dx|, |dq/dy|]
+    gc2 = np.abs(np.stack([gx2, gy2], axis=1))        # (N2, 2)
+
+    #FLOORED VERSION
+    # hps[0]=sf, hps[1]=ell0_x, hps[2]=ell0_y, hps[3]=ell_min, hps[4]=sqrt(beta)
+    # ell0    = np.asarray(hps[1:1 + D], dtype=float)   # (D,) per-axis MAX length scale
+    # ell_min = 0.1                              # shared floor (> 0, < min ell0_d)
+    # beta    = hps[1 + D] ** 2
+
+    # l1 = ell_min + (ell0 - ell_min)[None, :] / (1.0 + beta * gc1)   # (N1, D)
+    # l2 = ell_min + (ell0 - ell_min)[None, :] / (1.0 + beta * gc2)   # (N2, D)
+
+    
+    # --- per-direction length-scale fields (shared beta, forced non-negative) ---
+    ell0 = np.asarray(hps[1:1 + D], dtype=float)       # (D,) = [ell0_x, ell0_y, ...]
+    beta = hps[1 + D] ** 2                             # >= 0, shared across axes
+    l1 = ell0[None, :] / (1.0 + beta * gc1)            # (N1, D)  contracts per axis
+    l2 = ell0[None, :] / (1.0 + beta * gc2)            # (N2, D)
+
+    # --- diagonal Gibbs kernel: independent product over dimensions ---
+    prefactor = np.ones((x1.shape[0], x2.shape[0]))
+    exponent = np.zeros_like(prefactor)
+    for d in range(D):
+        a = l1[:, d][:, None]                          # (N1, 1)
+        b = l2[:, d][None, :]                          # (1, N2)
+        denom_d = a ** 2 + b ** 2                      # ell_d(x1)^2 + ell_d(x2)^2
+        dx_d = x1[:, d][:, None] - x2[:, d][None, :]   # per-axis coordinate diff
+        prefactor *= np.sqrt(2.0 * a * b / denom_d)    # PSD-preserving amplitude
+        exponent += -(dx_d ** 2) / denom_d
+    gibbs = prefactor * np.exp(exponent)
+
+    return hps[0] ** 2 * gibbs

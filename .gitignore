@@ -3,6 +3,7 @@ pout.*
 *.csv
 *.png
 *.out
+*.err
 *.pyc
 *.txt
 gpAMRenv/
