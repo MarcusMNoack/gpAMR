@@ -37,8 +37,8 @@ echo "setting up Chombo run"
 export MPICH_GPU_SUPPORT_ENABLED=0
 
 # Viscous flow
-progname="gpamrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
-input="flowpastcylinder2d.inputs"
+# progname="gpamrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+# input="flowpastcylinder2d.inputs"
 
 
 # Density
@@ -47,11 +47,11 @@ input="flowpastcylinder2d.inputs"
 
 
 # Advection
-# progname="gpadrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
+progname="gpadrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
 # input="linear_advection.inputs" 
-# linear_advection_h.inputs
-# linear_advection_2h.inputs
-# linear_advection_4h.inputs
+input="linear_advection_h.inputs"
+# input="linear_advection_2h.inputs"
+# input="linear_advection_4h.inputs"
 
 srun --exact -C gpu --nodes=2 --ntasks=8 $progname $input >& log
 
