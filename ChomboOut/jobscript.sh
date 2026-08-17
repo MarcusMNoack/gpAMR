@@ -48,10 +48,9 @@ export MPICH_GPU_SUPPORT_ENABLED=0
 
 # Advection
 progname="gpadrDriver2d.Linux.64.g++.gfortran.OPTHIGH.MPI.ex"
-# input="linear_advection.inputs" 
-input="linear_advection_h.inputs"
-# input="linear_advection_2h.inputs"
-# input="linear_advection_4h.inputs"
+# input="linear_advection_nx64.inputs"
+# input="linear_advection_nx128.inputs"
+input="linear_advection_nx256.inputs"
 
 srun --exact -C gpu --nodes=2 --ntasks=8 $progname $input >& log
 

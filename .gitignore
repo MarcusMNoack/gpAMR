@@ -10,3 +10,7 @@ gpAMRenv/
 /.ipynb_checkpoints
 /__py*
 Results/
+ChomboOut/
+*.ex
+*.o
+*.a

@@ -41,7 +41,7 @@ DASK_DISTRIBUTED__COMM__TIMEOUTS__CONNECT=3600s
 DASK_DISTRIBUTED__COMM__TIMEOUTS__TCP=3600s
 
 
-srun -N 1 -n 2 --ntasks-per-node=2 --cpus-per-task=32 \
+srun -N $1 -n $2 --ntasks-per-node=4 --cpus-per-task=32 \
      -o dask_worker_%t.txt -e dask_worker_%t.err dask worker --memory-limit="30 GiB" \
     --scheduler-file $scheduler_file \
     --interface hsn0 \
